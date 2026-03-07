@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
 class GasProvider extends ChangeNotifier {
-  final ApiService _apiService = ApiService();
 
   List<dynamic> _readings = [];
   bool _isLoading = false;
@@ -13,18 +12,23 @@ class GasProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   Future<void> fetchReadings() async {
+
     _isLoading = true;
     _errorMessage = null;
-    notifyListeners(); 
+    notifyListeners();
 
     try {
-      _readings = await _apiService.fetchReadings();
+
+      _readings = await ApiService.getReadings();
+
     } catch (e) {
+
       _errorMessage = "A connection problem has occured: $e";
       print(e);
+
     }
 
     _isLoading = false;
-    notifyListeners(); 
+    notifyListeners();
   }
 }
