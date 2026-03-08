@@ -1,51 +1,70 @@
 import statistics
+from datetime import datetime, timedelta
 
 def detect_anomaly(readings: list):
-    if len(readings) < 5:
-        return False, "Not enough data!"
+    if len(readings) < 2:
+        return False, "Not enough data to calculate consumption."
 
     sorted_readings = sorted(readings, key=lambda x: x.recorded_at) 
-    
-    # Calculate consumption
-    consumptions = []
+   
+    consumptions_with_date = []
     
     for i in range(1, len(sorted_readings)):
-        prev = sorted_readings[i-1].reading_value
-        curr = sorted_readings[i].reading_value
-      
+        prev = sorted_readings[i-1]
+        curr = sorted_readings[i]
+        
         try:
-            diff = float(curr) - float(prev)
-            if diff >= 0:
-                consumptions.append(diff)
+            val_prev = float(prev.reading_value)
+            val_curr = float(curr.reading_value)
+            
+            diff = val_curr - val_prev
+          
+            if diff >= 0 and diff < 1000:
+                consumptions_with_date.append({
+                    'value': diff,
+                    'date': curr.recorded_at
+                })
         except:
             continue
 
-    if not consumptions:
-        return False, "The consumption cannot be computed. Invalid data!"
+    if not consumptions_with_date:
+        return False, "Consumption could not be computed (invalid data)."
 
-    current_consumption = consumptions[-1]
-    history = consumptions[:-1]
+    current_data = consumptions_with_date[-1]
+    current_consumption = current_data['value']
+    current_date = current_data['date']
+    
+    raw_history = consumptions_with_date[:-1]
 
-    if len(history) < 3:
-         return False, "Data history is too short."
+    cutoff_date = current_date - timedelta(days=14)
+    
+    window_history = [
+        item['value'] 
+        for item in raw_history 
+        if item['date'] >= cutoff_date
+    ]
 
-    # 3. Calcul Statistici
+    if len(window_history) < 3:
+         return False, f"Calibrating... (Need more data in the last 14 days. Found: {len(window_history)})"
+
     try:
-        mean = statistics.mean(history)          
-        stdev = statistics.stdev(history) 
+        mean = statistics.mean(window_history)          
+        stdev = statistics.stdev(window_history) 
     except:
-        return False, "Statistics calculation error."
+        mean = statistics.mean(window_history)
+        stdev = 0.5 
 
-    # Threshold: Media + 3 * Deviația
+    if stdev == 0:
+        stdev = 0.1
+
     threshold = mean + (3 * stdev)
 
-    # Prag minim de siguranță (să nu dea alertă la 0.001 mc)
     if threshold < 1.0: 
         threshold = 1.0
 
-    print(f"Actual consumption: {current_consumption:.2f} | Limit: {threshold:.2f}")
+    print(f"[ANALYTICS] Window (14 days): {len(window_history)} samples | Mean: {mean:.2f} | Current: {current_consumption:.2f} | Limit: {threshold:.2f}")
 
     if current_consumption > threshold:
-        return True, f"ALERT! Abnormal consumption: {current_consumption:.2f} m³"
+        return True, f"ALERT! Abnormal consumption: {current_consumption:.2f} m³)"
     
-    return False, "Normal consumption."
+    return False, f"Normal consumption.)"
