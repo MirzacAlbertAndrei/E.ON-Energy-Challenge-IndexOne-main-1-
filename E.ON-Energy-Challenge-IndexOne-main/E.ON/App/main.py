@@ -7,6 +7,7 @@ import numpy as np
 import os
 import json
 from datetime import datetime
+from . import prediction
 
 from . import models, database, analytics
 
@@ -181,6 +182,32 @@ async def get_readings(limit: int = 20, db: Session = Depends(database.get_db)):
         "data": data
     }
 
+@app.get("/analytics")
+async def get_analytics(db: Session = Depends(database.get_db)):
+    all_readings = db.query(models.MeterReading).all()
+    is_anomaly, message = analytics.detect_anomaly(all_readings)
+
+    return {
+        "status": "success",
+        "data": {
+            "is_anomaly": is_anomaly,
+            "message": message
+        }
+    }
+
+@app.get("/prediction")
+async def get_prediction(db: Session = Depends(database.get_db)):
+    all_readings = db.query(models.MeterReading).all()
+    predicted = prediction.predict_next_consumption(all_readings)
+
+    return {
+        "status": "success",
+        "data": {
+            "predicted_next_consumption": predicted
+        }
+    }
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+    

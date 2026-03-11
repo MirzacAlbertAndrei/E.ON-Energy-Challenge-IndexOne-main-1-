@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
-import 'screens/login_screen.dart';
+import 'package:smart_gas_meter_app/screens/splash_screen.dart';
+import 'package:smart_gas_meter_app/theme/app_theme.dart';
 
 void main() {
-  runApp(const GasMeterApp());
+  runApp(const SmartGasMeterApp());
 }
 
-class GasMeterApp extends StatelessWidget {
-  const GasMeterApp({super.key});
+class SmartGasMeterApp extends StatelessWidget {
+  const SmartGasMeterApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Smart Gas Meter",
+      title: 'IndexOne',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const LoginScreen(),
+      theme: AppTheme.lightTheme,
+      home: const SplashScreen(),
     );
   }
 }

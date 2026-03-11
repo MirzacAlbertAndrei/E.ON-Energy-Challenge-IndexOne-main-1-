@@ -1,22 +1,24 @@
 class Reading {
   final int id;
   final double value;
-  final String date;
-  final String status;
+  final DateTime date;
+  final String? status;
 
   Reading({
     required this.id,
     required this.value,
     required this.date,
-    required this.status,
+    this.status,
   });
 
   factory Reading.fromJson(Map<String, dynamic> json) {
+    final rawDate = (json['date'] ?? '').toString().replaceFirst(' ', 'T');
+
     return Reading(
-      id: json['id'],
-      value: json['value'].toDouble(),
-      date: json['date'],
-      status: json['status'],
+      id: json['id'] ?? 0,
+      value: (json['value'] as num).toDouble(),
+      date: DateTime.parse(rawDate),
+      status: json['status']?.toString(),
     );
   }
 }

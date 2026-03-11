@@ -19,7 +19,7 @@ class GasProvider extends ChangeNotifier {
 
     try {
 
-      _readings = await ApiService.getReadings();
+      _readings = await ApiService().fetchReadings();
 
     } catch (e) {
 
