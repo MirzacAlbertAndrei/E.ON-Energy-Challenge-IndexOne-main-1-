@@ -154,8 +154,3 @@ The current FastAPI backend exposes endpoints for:
 - consumption analytics and anomaly status
 - next-consumption prediction
 
-## Security
-
-Network credentials are intentionally kept outside the tracked source code through `secrets.h`.
-
-Do not commit real Wi-Fi passwords, API keys, or other credentials.
