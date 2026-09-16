@@ -69,7 +69,7 @@ Flutter Mobile App
 - Provider
 - fl_chart
 
-## Repository Structure
+## Project Structure
 
 ```text
 Smart-Gas-Meter/
