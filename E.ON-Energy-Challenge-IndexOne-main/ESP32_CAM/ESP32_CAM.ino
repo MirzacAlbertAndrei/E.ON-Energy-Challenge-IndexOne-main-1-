@@ -5,9 +5,7 @@
 #include <HTTPClient.h>
 
 // -------------------- WIFI / SERVER --------------------
-const char* ssid = "DIGI-YyN6";
-const char* password = "R7tkT2PCUg";
-const char* serverName = "http://192.168.1.141:8000/receive-image";
+#include "secrets.h"
 
 // -------------------- PINS --------------------
 const int PIN_LATCH = 14;
