@@ -99,69 +99,6 @@ For anomaly detection, recent consumption values from a 14-day window are used t
 
 A linear regression model is also used to estimate the next consumption value from previous consumption samples.
 
-## Setup
-
-### 1. Backend
-
-From the repository root:
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r backend/requirements.txt
-uvicorn backend.main:app --host 0.0.0.0 --port 8000
-```
-
-On Windows:
-
-```powershell
-.venv\Scripts\activate
-```
-
-### 2. ESP32-CAM
-
-Copy:
-
-```text
-firmware/secrets.h.example
-```
-
-to:
-
-```text
-firmware/secrets.h
-```
-
-Then set your own Wi-Fi credentials and backend URL.
-
-### 3. Flutter App
-
-```bash
-cd mobile
-flutter pub get
-flutter run
-```
-
-Update the backend address in:
-
-```text
-mobile/lib/config/api_config.dart
-```
-
-### 4. Demo Analytics Data
-
-From the repository root:
-
-```bash
-python seed_demo_data.py normal
-```
-
-or:
-
-```bash
-python seed_demo_data.py alert
-```
-
 ## API Overview
 
 The FastAPI backend includes endpoints for:
