@@ -69,35 +69,105 @@ Flutter Mobile App
 - Provider
 - fl_chart
 
+## Repository Structure
+
+```text
+Smart-Gas-Meter/
+├── backend/              # FastAPI backend, database, analytics and prediction
+├── firmware/             # ESP32-CAM firmware and example network configuration
+├── mobile/               # Flutter application
+├── models/               # YOLO model weights
+├── seed_demo_data.py     # Demo data generator for analytics testing
+├── .gitignore
+└── README.md
+```
+
 ## How the Meter Reading Works
 
-The computer vision pipeline uses two detection stages:
-
-1. A YOLO model identifies the meter index region in the captured image.
-2. The detected region is cropped and enlarged.
-3. A second YOLO model detects the individual digits.
-4. Overlapping detections are filtered and the remaining digits are ordered from left to right.
-5. The final reading is stored by the backend and made available to the mobile app.
+1. The ESP32-CAM captures the gas meter display.
+2. The image is uploaded to the FastAPI backend.
+3. A YOLO model locates the meter index region.
+4. A second YOLO model detects the individual digits.
+5. Overlapping detections are filtered and sorted from left to right.
+6. The resulting reading is stored and exposed to the mobile app.
 
 ## Analytics
 
 The backend derives consumption from consecutive meter readings.
 
-For anomaly detection, recent consumption values from a 14-day window are used to calculate a statistical threshold based on the historical mean and standard deviation.
+For anomaly detection, recent consumption values from a 14-day window are used to calculate a threshold based on the historical mean and standard deviation.
 
 A linear regression model is also used to estimate the next consumption value from previous consumption samples.
 
-## Repository Structure
+## Setup
+
+### 1. Backend
+
+From the repository root:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
+uvicorn backend.main:app --host 0.0.0.0 --port 8000
+```
+
+On Windows:
+
+```powershell
+.venv\Scripts\activate
+```
+
+### 2. ESP32-CAM
+
+Copy:
 
 ```text
-E.ON-Energy-Challenge-IndexOne-main/
-├── ESP32_CAM/
-│   ├── ESP32_CAM.ino
-│   └── secrets.h.example
-└── E.ON/
-    ├── App/                    # FastAPI backend and analytics
-    ├── ReadingBackend/         # Earlier backend prototype
-    ├── smart_gas_meter_app/    # Flutter application
-    ├── best.pt                 # Meter-region YOLO model
-    └── yolo_digits.pt          # Digit-detection YOLO model
+firmware/secrets.h.example
 ```
+
+to:
+
+```text
+firmware/secrets.h
+```
+
+Then set your own Wi-Fi credentials and backend URL.
+
+### 3. Flutter App
+
+```bash
+cd mobile
+flutter pub get
+flutter run
+```
+
+Update the backend address in:
+
+```text
+mobile/lib/config/api_config.dart
+```
+
+### 4. Demo Analytics Data
+
+From the repository root:
+
+```bash
+python seed_demo_data.py normal
+```
+
+or:
+
+```bash
+python seed_demo_data.py alert
+```
+
+## API Overview
+
+The FastAPI backend includes endpoints for:
+
+- receiving images from the ESP32-CAM
+- retrieving stored meter readings
+- reading and updating the capture interval
+- anomaly detection
+- next-consumption prediction
