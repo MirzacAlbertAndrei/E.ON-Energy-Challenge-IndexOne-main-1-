@@ -1,0 +1,29 @@
+# Secrets and local configuration
+**/secrets.h
+.env
+.env.*
+!.env.example
+
+# Python
+**/__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# IDEs
+.idea/
+.vscode/
+
+# Runtime data
+**/uploads/
+*.db
+
+# Flutter / Dart
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# OS files
+.DS_Store
+Thumbs.db
